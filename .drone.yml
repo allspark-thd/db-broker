@@ -1,0 +1,24 @@
+clone:
+  skip_verify: true
+
+build:
+  image: golang:1.6
+  environment:
+    - GOOS=linux
+
+  commands:
+    - make clean
+    - make deps
+    - make test
+    - make build
+
+deploy:
+  cloudfoundry:
+    api: api.run-np.homedepot.com
+    org: jq-org
+    space: development
+    user: $$USER
+    password: $$PASSWORD
+    when:
+      event: tag
+      branch: master
