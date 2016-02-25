@@ -1,7 +1,7 @@
 package model
 
 type ServiceInstance struct {
-	Id               string `json:"id"`
+	ID               string `json:"id"`
 	DashboardUrl     string `json:"dashboard_url"`
 	InternalId       string `json:"internalId, omitempty"`
 	ServiceId        string `json:"service_id"`
@@ -11,7 +11,7 @@ type ServiceInstance struct {
 
 	LastOperation *LastOperation `json:"last_operation, omitempty"`
 
-	Parameters interface{} `json:"parameters, omitempty"`
+	// Parameters interface{} `json:"parameters, omitempty"`
 }
 
 type LastOperation struct {
