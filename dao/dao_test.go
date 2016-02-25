@@ -1,8 +1,6 @@
 package dao_test
 
 import (
-	"os"
-
 	. "github.homedepot.com/joshq/db-broker/dao"
 	. "github.homedepot.com/joshq/db-broker/model"
 
@@ -21,7 +19,7 @@ func testServiceInstances() {
 	var dao BrokerDAO
 	var testInstance ServiceInstance
 	BeforeEach(func() {
-		db, _ := gorm.Open("sqlite3", "broker.sqlite")
+		db, _ := gorm.Open("sqlite3", ":memory:")
 		dao = NewBrokerDAO(db)
 		testInstance = ServiceInstance{
 			ID:               "svc-instance-id",
@@ -30,9 +28,7 @@ func testServiceInstances() {
 			ServiceId:        "svc-guid",
 		}
 	})
-	AfterEach(func() {
-		os.Remove("broker.sqlite")
-	})
+
 	Describe("#SaveServiceInstance", func() {
 		It("saves new instances", func() {
 			Ω(dao.SaveServiceInstance(testInstance)).

@@ -5,9 +5,13 @@ import (
 
 	"testing"
 
+	"github.com/jinzhu/gorm"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
+	"github.homedepot.com/joshq/db-broker/dao"
 	. "github.homedepot.com/joshq/db-broker/server"
+
+	_ "github.com/mattn/go-sqlite3"
 )
 
 func TestServer(t *testing.T) {
@@ -16,7 +20,9 @@ func TestServer(t *testing.T) {
 }
 
 func createTestServer() *httptest.Server {
-	return httptest.NewServer(NewRouter())
+	db, _ := gorm.Open("sqlite3", ":memory:")
+	dao := dao.NewBrokerDAO(db)
+	return httptest.NewServer(NewRouter(dao))
 }
 
 // type closer func()

@@ -35,8 +35,10 @@ var _ = Describe("/v2/catalog", func() {
 		catalog := parseCatalog(response)
 		Ω(catalog).ShouldNot(BeNil())
 		Ω(catalog.Services).ShouldNot(BeEmpty())
-
 	})
+
+	// TODO
+	It("has valid service definitions", func() {})
 })
 
 func parseCatalog(response *http.Response) *Catalog {

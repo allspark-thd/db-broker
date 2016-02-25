@@ -24,4 +24,7 @@ _testmain.go
 *.prof
 *.coverprofile
 db_broker
+
 *.sqlite
+
+vendor
