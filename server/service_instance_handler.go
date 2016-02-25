@@ -2,6 +2,7 @@ package server
 
 import (
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -42,6 +43,12 @@ func (h serviceInstanceHandler) GET(w http.ResponseWriter, r *http.Request) {
 	guid := mux.Vars(r)["guid"]
 	log.Printf("Fetching service instance `%s`", guid)
 	svcInstance, _ := h.FindServiceInstance(guid)
+	if svcInstance == nil {
+		msg := fmt.Sprintf("Instance `%s` not found", guid)
+		log.Println(msg)
+		http.Error(w, msg, http.StatusNotFound)
+		return
+	}
 	writeJSON(w, svcInstance)
 }
 

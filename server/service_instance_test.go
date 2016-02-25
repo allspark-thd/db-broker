@@ -2,6 +2,7 @@ package server_test
 
 import (
 	"bytes"
+	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"net/http"
@@ -28,14 +29,14 @@ var _ = Describe("/v2/service_instances/{guid}", func() {
 	}
 	const svcjson = `
 	{
-		"organization_guid": "org-guid-here",
+		"organization_guid": "instnc-guid-here",
 		"plan_id":           "plan-guid-here",
 		"service_id":        "service-guid-here",
 		"space_guid":        "space-guid-here"
 	}`
 	Describe("PUT", func() {
 		It("requires `?accepts_incomplete=true`", func() {
-			response, _ := Put(instanceURL("org-guid-here"), svcjson)
+			response, _ := Put(instanceURL("instnc-guid-here"), svcjson)
 
 			Ω(response.StatusCode).
 				Should(Equal(422), "Unprocessable Entity")
@@ -51,32 +52,49 @@ var _ = Describe("/v2/service_instances/{guid}", func() {
 		It("saves a service instance", func() {
 			url := fmt.Sprintf(
 				"%s?accepts_incomplete=true",
-				instanceURL("org-guid-here"))
+				instanceURL("instnc-guid-here"))
 			response, _ := Put(url, svcjson)
 			Ω(response.StatusCode).Should(Equal(http.StatusAccepted))
 		})
+		// TODO test that we contact provisioner api
 	})
 	Describe("GET", func() {
 		BeforeEach(func() {
 			url := fmt.Sprintf(
 				"%s?accepts_incomplete=true",
-				instanceURL("org-guid-here"))
+				instanceURL("instnc-guid-here"))
 			Put(url, svcjson)
 		})
 
+		It("404's for non-existent instance", func() {
+			response, _ := http.Get(instanceURL("non-existent-guid"))
+			Ω(response.StatusCode).
+				Should(Equal(http.StatusNotFound))
+		})
+
 		It("looks up service instance by guid", func() {
-			response, _ := http.Get(instanceURL("org-guid-here"))
+			response, _ := http.Get(instanceURL("instnc-guid-here"))
 			defer response.Body.Close()
 			body, _ := ioutil.ReadAll(response.Body)
 			Ω(body).Should(MatchJSON(svcjson))
 		})
+
+		Describe("/last_operation", func() {
+			var getLastOp = func() map[string]string {
+				response, _ := http.Get(instanceURL("instnc-guid-here"))
+				defer response.Body.Close()
+				body, _ := ioutil.ReadAll(response.Body)
+				var statemap map[string]string
+				json.Unmarshal(body, &statemap)
+				return statemap
+			}
+
+			// TODO
+			It("checks credentials with the Todd", func() {
+				getLastOp()
+			})
+		})
 	})
-	// create => 202
 })
 
 // http://docs.cloudfoundry.org/services/api.html#polling
-var _ = Describe(
-	"GET /v2/service_instances/{guid}/last_operation",
-	func() {
-
-	})
